@@ -8,7 +8,7 @@ const router = express.Router()
 
 
 router.get('/', auth, async (req, res) => {
-    let alldec = await declaration.find({ userId: req.user.id })
+    let alldec = await declaration.find({ userId: req.user.id }).sort('date')
     res.json(alldec)
 })
 
@@ -37,15 +37,28 @@ router.get('/', auth, async (req, res) => {
 
 
 
-    }).delete('/:id', auth, async (req, res) => {
-        let result = await declaration.findByIdAndRemove(req.params.id)
-        if (result) { res.status(200).json({ message: 'Declaration suprimée' }) }
+    }).delete('/:id',auth ,async (req, res) => {
+        let result = await declaration.findOneAndDelete(req.params.id)
+        let data=await declaration.find({userId:req.user.id})
+        if (result) { res.status(200).json(data) }
 
-    }).put('/:id', auth, async (req, res) => {
-        let dec = await declaration.findOne({ _id: req.params.id })
-        dec.status = 'payée'
-        await dec.save()
-        res.status(200).json({ message: 'Done' })
+    }).post('/fil',async (req, res) => {
+       
+        const title = req.body.title
+        const userI=req.body.userId
+        try {
+
+            let result = await declaration.findOne({ title: title })
+            if (result) { 
+                res.status(200).json([result]) }
+            else { res.status(404).json({ message: 'Introvable' }) }
+
+        } catch (error) {
+            console.log(error.message)
+            res.status(400).json({ message: 'server error' })
+        }
+         
+
 
     }).get('/filter', async (req, res) => {
 

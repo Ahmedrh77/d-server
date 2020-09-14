@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 
 const declarationSchema = new mongoose.Schema({
-    userId:{type:String,require:true},
+    userId:{type:String,default:'',require:true},
     title: { type: String, require: true },
     date: { type: Date },
     status: { type: String, default: 'Non-Payée' }
